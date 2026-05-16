@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barcelona — May 20–25, 2026</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #fdfaf5;
+  --card: #ffffff;
+  --ink: #2a2a2a;
+  --ink-soft: #6b6b6b;
+  --line: #e8e3d8;
+  --accent: #c65d3b;
+  --accent-soft: #f4d8cc;
+  --blue: #1d4e6f;
+  --blue-soft: #e1ecf3;
+  --yellow: #f4c95d;
+  --green: #5a8f5a;
+  --red: #b03a2e;
+  --radius: 12px;
+  --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.04);
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px 16px 80px 16px;
+}
+h1 { font-size: 28px; margin: 0 0 4px 0; letter-spacing: -0.02em; }
+h2 { font-size: 20px; margin: 0 0 12px 0; letter-spacing: -0.01em; }
+h3 { font-size: 16px; margin: 0 0 6px 0; }
+.subtitle { color: var(--ink-soft); font-size: 15px; margin-bottom: 16px; }
+
+.countdown {
+  background: var(--accent);
+  color: white;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: var(--shadow);
+}
+.countdown .big {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+.countdown .label {
+  font-size: 13px;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.countdown .right { text-align: right; }
+
+.tabs {
+  display: flex;
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 4px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.tab {
+  flex: 1;
+  padding: 10px 8px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--ink-soft);
+  transition: background 0.15s, color 0.15s;
+  user-select: none;
+}
+.tab.active {
+  background: var(--accent);
+  color: white;
+}
+
+.section { display: none; }
+.section.active { display: block; }
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 0;
+}
+.card-row + .card-row { border-top: 1px solid var(--line); }
+.muted { color: var(--ink-soft); font-size: 14px; }
+.mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 14px; }
+
+.day {
+  background: var(--card);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.day-head {
+  padding: 14px 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  border-left: 4px solid transparent;
+}
+.day-head.is-today { border-left-color: var(--accent); background: linear-gradient(90deg, var(--accent-soft) 0%, transparent 30%); }
+.day-head.is-past { opacity: 0.5; }
+.day-title { font-weight: 600; font-size: 16px; }
+.day-date { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+.day-theme { font-size: 13px; color: var(--accent); font-weight: 500; margin-top: 4px; }
+.chev { color: var(--ink-soft); transition: transform 0.2s; font-size: 14px; }
+.day.open .chev { transform: rotate(180deg); }
+.day-body { display: none; padding: 0 16px 16px 16px; }
+.day.open .day-body { display: block; }
+
+.timeline { border-left: 2px solid var(--line); padding-left: 16px; margin-left: 4px; }
+.tl-item { position: relative; padding-bottom: 14px; }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-item::before {
+  content: "";
+  position: absolute;
+  left: -22px;
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+}
+.tl-time { font-weight: 600; font-size: 14px; color: var(--blue); display: inline-block; margin-right: 8px; }
+.tl-what { display: block; margin-top: 2px; font-size: 15px; }
+.tl-note { display: block; color: var(--ink-soft); font-size: 13px; margin-top: 4px; }
+.tl-actions { margin-top: 6px; display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-pill {
+  font-size: 12px;
+  padding: 4px 10px;
+  background: var(--blue-soft);
+  color: var(--blue);
+  border-radius: 999px;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 500;
+}
+.btn-pill:hover { background: var(--blue); color: white; }
+.btn-pill.warn { background: #fff3cd; color: #8a6d3b; }
+.btn-pill.book { background: var(--accent-soft); color: var(--accent); }
+
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.check-item:last-child { border-bottom: none; }
+.check-box {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--ink-soft);
+  flex-shrink: 0;
+  margin-top: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  font-size: 14px;
+  color: transparent;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.check-item.done .check-box {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+.check-item.done .check-body { opacity: 0.5; }
+.check-item.done .check-title { text-decoration: line-through; }
+.check-body { flex: 1; }
+.check-title { font-weight: 600; font-size: 15px; }
+.priority {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.p-now { background: var(--red); color: white; }
+.p-soon { background: var(--yellow); color: #6a4c00; }
+.p-trip { background: var(--blue); color: white; }
+.check-meta { color: var(--ink-soft); font-size: 13px; margin-top: 4px; }
+.check-actions { margin-top: 6px; }
+
+.divider { height: 1px; background: var(--line); margin: 16px 0; }
+.section-head {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  font-weight: 600;
+  margin-bottom: 8px;
+  margin-top: 16px;
+}
+.section-head:first-child { margin-top: 0; }
+
+.tip-list { padding-left: 18px; margin: 8px 0; }
+.tip-list li { margin-bottom: 6px; font-size: 14px; }
+
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--blue-soft);
+  color: var(--blue);
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.resto-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+.resto-row {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.resto-row:last-child { border-bottom: none; }
+.resto-name { font-weight: 600; font-size: 15px; }
+.resto-meta { color: var(--ink-soft); font-size: 13px; }
+
+footer { text-align: center; color: var(--ink-soft); font-size: 12px; margin-top: 32px; }
+
+@media (max-width: 480px) {
+  body { padding: 12px 12px 60px 12px; }
+  h1 { font-size: 24px; }
+  .countdown .big { font-size: 22px; }
+  .tab { font-size: 13px; padding: 9px 4px; }
+}
+</style>
+</head>
+<body>
+
+<h1>Barcelona</h1>
+<div class="subtitle">May 20–25, 2026 · with Borbála</div>
+
+<div class="countdown" id="countdown">
+  <div>
+    <div class="label" id="cd-label">Days until departure</div>
+    <div class="big" id="cd-value">—</div>
+  </div>
+  <div class="right">
+    <div class="label">Hotel</div>
+    <div style="font-size:15px;font-weight:600;">Leonardo Las Ramblas</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-section="plan">Plan</div>
+  <div class="tab" data-section="bookings">Bookings</div>
+  <div class="tab" data-section="refs">Refs</div>
+</div>
+
+<!-- ===== PLAN ===== -->
+<div class="section active" id="plan">
+
+  <div class="day" data-date="2026-05-20">
+    <div class="day-head">
+      <div>
+        <div class="day-title">Day 1 — Arrival</div>
+        <div class="day-date">Wed, May 20</div>
+        <div class="day-theme">Land, settle, tapas, wander Las Ramblas</div>
+      </div>
+      <div class="chev">▼</div>
+    </div>
+    <div class="day-body">
+      <div class="timeline">
+        <div class="tl-item">
+          <span class="tl-time">18:40</span><span class="tl-what">Land at BCN (FR8393)</span>
+          <span class="tl-note">Walk to Aerobús A1 stop at T1, departs every 5 min, €7.25, ~35 min to Plaça Catalunya</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">~20:00</span><span class="tl-what">Check in at Leonardo Hotel</span>
+          <span class="tl-note">Junta de Comercio 8 · 8-min walk south from Pl. Catalunya</span>
+          <div class="tl-actions">
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Leonardo+Hotel+Barcelona+Las+Ramblas">Maps</a>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">21:00</span><span class="tl-what">Dinner — Bar Cañete (if booked) or La Plata / Bodega Biarritz</span>
+          <span class="tl-note">All within 5-min walk of hotel. Spanish dinner time starts late</span>
+          <div class="tl-actions">
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Bar+Cañete+Barcelona">Cañete</a>
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=La+Plata+Barcelona">La Plata</a>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">22:30</span><span class="tl-what">Walk down Las Ramblas to Mirador de Colom</span>
+          <span class="tl-note">Or vermouth at Bar Marsella — opened 1820, absinthe institution</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day" data-date="2026-05-21">
+    <div class="day-head">
+      <div>
+        <div class="day-title">Day 2 — Full-on Gaudí</div>
+        <div class="day-date">Thu, May 21</div>
+        <div class="day-theme">Sagrada Família · Park Güell · Bunkers sunset</div>
+      </div>
+      <div class="chev">▼</div>
+    </div>
+    <div class="day-body">
+      <div class="timeline">
+        <div class="tl-item">
+          <span class="tl-time">09:00</span><span class="tl-what">Sagrada Família + Nativity tower</span>
+          <span class="tl-note">~2.5h. Pre-booked timed entry required. Quiet Hour 09:00–10:00 (earphones)</span>
+          <div class="tl-actions">
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Sagrada+Familia">Maps</a>
+            <a class="btn-pill book" target="_blank" rel="noopener" href="https://sagradafamilia.org/en/tickets">Tickets</a>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">11:30</span><span class="tl-what">Hospital de Sant Pau</span>
+          <span class="tl-note">Modernist hospital, 10-min walk from Sagrada. €15. Less crowded, equally stunning</span>
+          <div class="tl-actions">
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Hospital+de+Sant+Pau+Barcelona">Maps</a>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">13:00</span><span class="tl-what">Lunch — La Pepita or Cervecería Catalana</span>
+          <span class="tl-note">No reservations at Cervecería — arrive at 13:00 sharp</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">15:00</span><span class="tl-what">Park Güell (Monumental Zone)</span>
+          <span class="tl-note">Pre-booked timed entry ~€18. Take L3 to Lesseps or Vallcarca</span>
+          <div class="tl-actions">
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Park+Güell">Maps</a>
+            <a class="btn-pill book" target="_blank" rel="noopener" href="https://parkguell.barcelona/en/buy-tickets">Tickets</a>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">18:00</span><span class="tl-what">Bunkers del Carmel (Turó de la Rovira)</span>
+          <span class="tl-note">Free. Bring cans. Sunset ~21:00 in late May. THE panoramic view</span>
+          <div class="tl-actions">
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Bunkers+del+Carmel">Maps</a>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">20:30</span><span class="tl-what">Dinner in Gràcia — Con Gracia or La Pubilla</span>
+          <span class="tl-note">Walk Plaça del Sol after</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day" data-date="2026-05-22">
+    <div class="day-head">
+      <div>
+        <div class="day-title">Day 3 — Gothic & El Born</div>
+        <div class="day-date">Fri, May 22</div>
+        <div class="day-theme">Wandering, Picasso, tapas crawl</div>
+      </div>
+      <div class="chev">▼</div>
+    </div>
+    <div class="day-body">
+      <div class="timeline">
+        <div class="tl-item">
+          <span class="tl-time">09:30</span><span class="tl-what">Slow coffee at Satan's Coffee Corner</span>
+          <div class="tl-actions">
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Satan%27s+Coffee+Corner+Barcelona">Maps</a>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">10:30</span><span class="tl-what">Gothic Quarter wander (self-guided)</span>
+          <span class="tl-note">Plaça Reial → Sant Felip Neri → Cathedral → Plaça del Rei → Roman walls. The maze is the point</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">12:30</span><span class="tl-what">Lunch at Mercat de la Boqueria</span>
+          <span class="tl-note">El Quim or Bar Pinotxo counter. Go deeper than the entrance stalls</span>
+          <div class="tl-actions">
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Mercat+de+la+Boqueria">Maps</a>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">14:30</span><span class="tl-what">Picasso Museum</span>
+          <span class="tl-note">~2h. Las Meninas reinterpretations are the highlight. Free Thu 16:00–19:00 if you swap</span>
+          <div class="tl-actions">
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Museu+Picasso+Barcelona">Maps</a>
+            <a class="btn-pill book" target="_blank" rel="noopener" href="https://www.bcn.cat/museupicasso/en/">Tickets</a>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">17:00</span><span class="tl-what">Santa Maria del Mar</span>
+          <span class="tl-note">Pure Catalan Gothic. €5 rooftop climb</span>
+          <div class="tl-actions">
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Basilica+Santa+Maria+del+Mar">Maps</a>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">18:00</span><span class="tl-what">Vermouth at Bormuth or Vermuteria del Tano</span>
+          <span class="tl-note">The Barcelona ritual</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">20:30</span><span class="tl-what">Tapas crawl — El Xampanyet → Cal Pep → Paradiso</span>
+          <span class="tl-note">All walk-in. Queue at Cal Pep 15 min before opening</span>
+          <div class="tl-actions">
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=El+Xampanyet+Barcelona">Xampanyet</a>
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Cal+Pep+Barcelona">Cal Pep</a>
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Paradiso+Barcelona+bar">Paradiso</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day" data-date="2026-05-23">
+    <div class="day-head">
+      <div>
+        <div class="day-title">Day 4 — Montserrat</div>
+        <div class="day-date">Sat, May 23</div>
+        <div class="day-theme">Nature day · monastery · choir · hike</div>
+      </div>
+      <div class="chev">▼</div>
+    </div>
+    <div class="day-body">
+      <div class="timeline">
+        <div class="tl-item">
+          <span class="tl-time">08:30</span><span class="tl-what">Breakfast, walk to Plaça Espanya (15 min)</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">09:36</span><span class="tl-what">R5 train to Montserrat-Aeri</span>
+          <span class="tl-note">FGC line, hourly, 1h ride. Buy combined ticket at station or fgc.cat</span>
+          <div class="tl-actions">
+            <a class="btn-pill book" target="_blank" rel="noopener" href="https://www.fgc.cat/en/train-fares/the-best-fares-and-promotions/">FGC tickets</a>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">10:50</span><span class="tl-what">Cable car up (Aeri de Montserrat)</span>
+          <span class="tl-note">Or stay one stop more for Cremallera rack railway</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">11:30</span><span class="tl-what">Monastery + La Moreneta (Black Madonna)</span>
+          <span class="tl-note">Be inside basilica by 12:45 for the 13:00 choir</span>
+          <div class="tl-actions">
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Montserrat+monastery">Maps</a>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">13:00</span><span class="tl-what">L'Escolania boys' choir — ~10 min</span>
+          <span class="tl-note">The singular moment of the day</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">14:30</span><span class="tl-what">Funicular Sant Joan + ridgeline trail</span>
+          <span class="tl-note">~1h easy-medium loop, dramatic views</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">17:30</span><span class="tl-what">Cable car/Cremallera down, train back</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">21:00</span><span class="tl-what">Casual dinner near hotel</span>
+          <span class="tl-note">Bodega 1900 (vermouth + Albert Adrià) or whatever looks good</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day" data-date="2026-05-24">
+    <div class="day-head">
+      <div>
+        <div class="day-title">Day 5 — Architecture, beach, splurge</div>
+        <div class="day-date">Sun, May 24</div>
+        <div class="day-theme">Casa Batlló · Barceloneta · farewell dinner</div>
+      </div>
+      <div class="chev">▼</div>
+    </div>
+    <div class="day-body">
+      <div class="timeline">
+        <div class="tl-item">
+          <span class="tl-time">10:30</span><span class="tl-what">Casa Batlló</span>
+          <span class="tl-note">AR-glasses tour worth the upgrade. ~1.5h. Pre-booked</span>
+          <div class="tl-actions">
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Casa+Batllo">Maps</a>
+            <a class="btn-pill book" target="_blank" rel="noopener" href="https://www.casabatllo.es/en/">Tickets</a>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">12:00</span><span class="tl-what">Passeig de Gràcia + Casa Amatller</span>
+          <span class="tl-note">Casa Milà rooftop optional second Gaudí. Amatller is shorter/cheaper than Batlló</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">13:30</span><span class="tl-what">Lunch — Cervecería Catalana or Tapas 24</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">15:00</span><span class="tl-what">Barceloneta beach walk to Bogatell</span>
+          <span class="tl-note">Bike rental available on the promenade</span>
+          <div class="tl-actions">
+            <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Barceloneta+beach">Maps</a>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">17:30</span><span class="tl-what">Parc de la Ciutadella + Arc de Triomf</span>
+          <span class="tl-note">Cascada fountain (Gaudí worked on it as a student)</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">19:30</span><span class="tl-what">Sunset drink — Hotel 1898 rooftop</span>
+          <span class="tl-note">Top of Las Ramblas. Drop-in welcome with a drink</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">21:30</span><span class="tl-what">Farewell dinner — splurge night</span>
+          <span class="tl-note">Disfrutar (if you got it) / Suculent / Bardeni el Meatbar</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day" data-date="2026-05-25">
+    <div class="day-head">
+      <div>
+        <div class="day-title">Day 6 — Departure</div>
+        <div class="day-date">Mon, May 25</div>
+        <div class="day-theme">Tight morning · home by 14:25</div>
+      </div>
+      <div class="chev">▼</div>
+    </div>
+    <div class="day-body">
+      <div class="timeline">
+        <div class="tl-item">
+          <span class="tl-time">07:00</span><span class="tl-what">Breakfast at hotel (opens 07:00)</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">07:45</span><span class="tl-what">Final pack + check out</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">08:00</span><span class="tl-what">Leave hotel</span>
+          <span class="tl-note">Walk to Pl. Catalunya (8 min) → Aerobús A1 (35 min) → BCN T1</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">09:00</span><span class="tl-what">At airport — 2h45 buffer</span>
+          <span class="tl-note">Plenty for Ryanair Schengen with online check-in & cabin bags</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-time">11:50</span><span class="tl-what">FR8384 to Budapest</span>
+          <span class="tl-note">Lands 14:25</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== BOOKINGS ===== -->
+<div class="section" id="bookings">
+
+  <div class="card" style="background:var(--accent-soft); border-left:4px solid var(--accent);">
+    <strong>Trip in <span id="cd-inline">—</span></strong> · 2026 is the Gaudí centenary. Sagrada & Park Güell are tight. Book what's left today.
+  </div>
+
+  <div class="section-head">Tickets — book first</div>
+  <div class="card" id="booking-list-tickets"></div>
+
+  <div class="section-head">Restaurants</div>
+  <div class="card" id="booking-list-resto"></div>
+
+  <div class="section-head">Practical</div>
+  <div class="card" id="booking-list-practical"></div>
+
+  <div style="text-align:center; margin-top:16px;">
+    <button id="reset-checks" style="background:none; border:1px solid var(--line); color:var(--ink-soft); font-size:13px; padding:8px 14px; border-radius:8px; cursor:pointer;">Reset checklist</button>
+  </div>
+</div>
+
+<!-- ===== REFS ===== -->
+<div class="section" id="refs">
+
+  <div class="section-head">Reservations</div>
+  <div class="card">
+    <div class="card-row"><span>Hotel</span><span class="mono">Booking #6499892562</span></div>
+    <div class="card-row"><span>Hotel PIN</span><span class="mono">7668</span></div>
+    <div class="card-row"><span>Ryanair</span><span class="mono">E4SH2X</span></div>
+    <div class="card-row"><span>Hotel phone</span><span class="mono">+34 933 18 89 70</span></div>
+    <div class="card-row"><span>Hotel address</span><span style="text-align:right; font-size:14px;">Junta de Comercio 8<br>08001 Barcelona</span></div>
+    <div class="card-row">
+      <span>Map</span>
+      <a class="btn-pill" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Leonardo+Hotel+Barcelona+Las+Ramblas+Junta+de+Comercio">Open hotel in Maps</a>
+    </div>
+  </div>
+
+  <div class="section-head">Flights</div>
+  <div class="card">
+    <div class="card-row"><span><strong>Outbound</strong> FR8393</span><span class="mono">Wed May 20</span></div>
+    <div class="card-row muted"><span>BUD → BCN</span><span class="mono">16:05 → 18:40</span></div>
+    <div class="card-row"><span><strong>Return</strong> FR8384</span><span class="mono">Mon May 25</span></div>
+    <div class="card-row muted"><span>BCN → BUD</span><span class="mono">11:50 → 14:25</span></div>
+    <div class="card-row" style="font-size:13px; color:var(--ink-soft);"><span>⚠ Ryanair: no paper boarding passes. App required.</span><span></span></div>
+  </div>
+
+  <div class="section-head">Restaurant Cheat Sheet</div>
+  <div class="card resto-grid">
+    <div class="resto-row"><div class="resto-name">Bar Cañete <span class="tag">Tapas</span><span class="tag">Splurge</span></div><div class="resto-meta">Classic seafood-tapas · El Raval · reserve</div></div>
+    <div class="resto-row"><div class="resto-name">Disfrutar <span class="tag">3 Michelin</span></div><div class="resto-meta">Splurge night · ex-elBulli · book ASAP</div></div>
+    <div class="resto-row"><div class="resto-name">Suculent <span class="tag">Splurge</span></div><div class="resto-meta">Carles Abellán · El Raval · intimate</div></div>
+    <div class="resto-row"><div class="resto-name">Bardeni — el Meatbar <span class="tag">Splurge</span></div><div class="resto-meta">Counter seating · top steaks</div></div>
+    <div class="resto-row"><div class="resto-name">Con Gracia <span class="tag">Tasting</span></div><div class="resto-meta">Tiny tasting-menu spot · Gràcia · reserve</div></div>
+    <div class="resto-row"><div class="resto-name">La Pubilla <span class="tag">Catalan</span></div><div class="resto-meta">Home cooking · Gràcia · reserve</div></div>
+    <div class="resto-row"><div class="resto-name">La Plata <span class="tag">Tapas</span></div><div class="resto-meta">Tiny, 4-item menu, no reservations</div></div>
+    <div class="resto-row"><div class="resto-name">Bodega Biarritz 1881 <span class="tag">Tapas</span></div><div class="resto-meta">Creative tapas near hotel</div></div>
+    <div class="resto-row"><div class="resto-name">Cervecería Catalana <span class="tag">Classic</span></div><div class="resto-meta">No reservations · arrive 13:00 sharp</div></div>
+    <div class="resto-row"><div class="resto-name">La Pepita <span class="tag">Tapas</span></div><div class="resto-meta">Eixample, creative · reserve</div></div>
+    <div class="resto-row"><div class="resto-name">El Xampanyet <span class="tag">Tapas</span></div><div class="resto-meta">Anchovies + cava · El Born · walk-in</div></div>
+    <div class="resto-row"><div class="resto-name">Cal Pep <span class="tag">Tapas</span></div><div class="resto-meta">Queue 15 min before opening, bar only</div></div>
+    <div class="resto-row"><div class="resto-name">Bormuth <span class="tag">Vermouth</span></div><div class="resto-meta">El Born ritual stop</div></div>
+    <div class="resto-row"><div class="resto-name">Bar Marsella <span class="tag">Historic</span></div><div class="resto-meta">Absinthe bar since 1820 · vibes</div></div>
+    <div class="resto-row"><div class="resto-name">Paradiso <span class="tag">Cocktails</span></div><div class="resto-meta">Speakeasy via pastrami fridge · expect queue</div></div>
+    <div class="resto-row"><div class="resto-name">Boqueria: El Quim / Bar Pinotxo <span class="tag">Market</span></div><div class="resto-meta">Counter seats, go deep in the market</div></div>
+    <div class="resto-row"><div class="resto-name">Bodega 1900 <span class="tag">Vermouth</span></div><div class="resto-meta">Albert Adrià · walk-in usually fine</div></div>
+    <div class="resto-row"><div class="resto-name">Satan's Coffee Corner <span class="tag">Coffee</span></div><div class="resto-meta">Best coffee in the Gothic</div></div>
+  </div>
+
+  <div class="section-head">Transit quick reference</div>
+  <div class="card">
+    <div class="card-row"><span><strong>Aerobús A1</strong></span><span>T1 ↔ Pl. Catalunya · €7.25</span></div>
+    <div class="card-row"><span><strong>T-casual</strong></span><span>€12.55 · 10 rides · shareable</span></div>
+    <div class="card-row"><span><strong>Metro to Park Güell</strong></span><span>L3 → Lesseps or Vallcarca</span></div>
+    <div class="card-row"><span><strong>Train to Montserrat</strong></span><span>FGC R5 from Pl. Espanya · hourly</span></div>
+  </div>
+
+  <div class="section-head">Useful Catalan / Spanish</div>
+  <div class="card">
+    <div class="card-row"><span>Hello</span><span class="muted">Hola</span></div>
+    <div class="card-row"><span>Thank you</span><span class="muted">Gràcies / Gracias</span></div>
+    <div class="card-row"><span>The bill, please</span><span class="muted">El compte / La cuenta, por favor</span></div>
+    <div class="card-row"><span>Tap water</span><span class="muted">Aigua de l'aixeta / agua del grifo</span></div>
+    <div class="card-row"><span>Two of these</span><span class="muted">Dos d'aquests / dos de éstos</span></div>
+    <div class="card-row"><span>Cheers</span><span class="muted">Salut / Salud</span></div>
+  </div>
+
+  <div class="section-head">Emergency / good-to-know</div>
+  <div class="card">
+    <div class="card-row"><span>EU emergency</span><span class="mono">112</span></div>
+    <div class="card-row"><span>Tipping</span><span class="muted">5–10% if service good · not obligatory</span></div>
+    <div class="card-row"><span>Pickpockets</span><span class="muted">Las Ramblas + metro · phone in front pocket</span></div>
+    <div class="card-row"><span>Weather May</span><span class="muted">18–25°C · light evening layer</span></div>
+  </div>
+
+</div>
+
+<footer>Last updated May 16, 2026 · Plan based on your accommodation and flight confirmations</footer>
+
+<script>
+// ============ Countdown ============
+function updateCountdown() {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const depart = new Date(2026, 4, 20); // May 20
+  const ret = new Date(2026, 4, 25);    // May 25
+  const msDay = 1000*60*60*24;
+  let label, value;
+  if (today < depart) {
+    const days = Math.round((depart - today)/msDay);
+    label = days === 1 ? "Day until departure" : "Days until departure";
+    value = days;
+  } else if (today <= ret) {
+    const dayN = Math.round((today - depart)/msDay) + 1;
+    label = "Day of trip";
+    value = dayN + " / 6";
+  } else {
+    label = "Trip complete";
+    value = "✓";
+  }
+  document.getElementById("cd-label").textContent = label;
+  document.getElementById("cd-value").textContent = value;
+  const inline = document.getElementById("cd-inline");
+  if (inline) {
+    if (today < depart) {
+      const days = Math.round((depart - today)/msDay);
+      inline.textContent = days === 1 ? "1 day" : days + " days";
+    } else { inline.textContent = "progress"; }
+  }
+}
+
+// ============ Day highlighting ============
+function markDays() {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  let openedToday = false;
+  document.querySelectorAll(".day").forEach(d => {
+    const date = new Date(d.dataset.date + "T00:00:00");
+    const head = d.querySelector(".day-head");
+    if (date.getTime() === today.getTime()) {
+      head.classList.add("is-today");
+      d.classList.add("open");
+      openedToday = true;
+    } else if (date < today) {
+      head.classList.add("is-past");
+    }
+  });
+  // If trip not yet started and nothing's open, open Day 1
+  if (!openedToday) {
+    const depart = new Date(2026, 4, 20);
+    if (today < depart) {
+      document.querySelector('.day[data-date="2026-05-20"]').classList.add("open");
+    }
+  }
+}
+
+// ============ Tab switching ============
+document.querySelectorAll(".tab").forEach(t => {
+  t.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+    document.querySelectorAll(".section").forEach(x => x.classList.remove("active"));
+    t.classList.add("active");
+    document.getElementById(t.dataset.section).classList.add("active");
+    window.scrollTo(0, 0);
+  });
+});
+
+// ============ Day expand/collapse ============
+document.querySelectorAll(".day-head").forEach(h => {
+  h.addEventListener("click", () => {
+    h.closest(".day").classList.toggle("open");
+  });
+});
+
+// ============ Booking checklist ============
+const checklist = {
+  tickets: [
+    { id: "ck-sagrada", title: "Sagrada Família + Nativity tower", prio: "now",
+      meta: "Thu May 21 morning · ~€46.80 w/ tower",
+      link: "https://sagradafamilia.org/en/tickets", linkLabel: "Book" },
+    { id: "ck-guell", title: "Park Güell timed entry", prio: "now",
+      meta: "Thu May 21 ~15:00 · ~€18",
+      link: "https://parkguell.barcelona/en/buy-tickets", linkLabel: "Book" },
+    { id: "ck-batllo", title: "Casa Batlló", prio: "now",
+      meta: "Sun May 24 morning · Gold ticket ~€39",
+      link: "https://www.casabatllo.es/en/", linkLabel: "Book" },
+    { id: "ck-picasso", title: "Picasso Museum (optional timed entry)", prio: "soon",
+      meta: "Fri May 22 afternoon · or free Thu 16–19",
+      link: "https://www.bcn.cat/museupicasso/en/", linkLabel: "Book" },
+    { id: "ck-montserrat", title: "Montserrat combined ticket", prio: "soon",
+      meta: "Trans Montserrat (~€38) or Tot Montserrat · buy at Pl. Espanya station Sat AM",
+      link: "https://www.fgc.cat/en/", linkLabel: "FGC" },
+  ],
+  resto: [
+    { id: "ck-canete", title: "Bar Cañete", prio: "now",
+      meta: "Wed May 20 or Sat night · El Raval", link: "", linkLabel: "" },
+    { id: "ck-disfrutar", title: "Disfrutar (try anyway)", prio: "now",
+      meta: "Splurge night · likely booked but try", link: "https://www.disfrutarbarcelona.com/", linkLabel: "Book" },
+    { id: "ck-splurge-backup", title: "Splurge backup — Suculent or Bardeni", prio: "now",
+      meta: "Sun May 24 night if Disfrutar's gone", link: "", linkLabel: "" },
+    { id: "ck-gracia", title: "Con Gracia or La Pubilla", prio: "soon",
+      meta: "Thu May 21 night · Gràcia", link: "", linkLabel: "" },
+  ],
+  practical: [
+    { id: "ck-checkin", title: "Online check-in for return flight", prio: "soon",
+      meta: "Opens Sun May 24 ~11:50 · Ryanair app only", link: "", linkLabel: "" },
+    { id: "ck-ryanair-app", title: "Download Ryanair app for both phones", prio: "soon",
+      meta: "No paper boarding passes accepted", link: "", linkLabel: "" },
+    { id: "ck-aerobus", title: "Buy Aerobús tickets online (optional)", prio: "trip",
+      meta: "Slightly cheaper · or buy on board",
+      link: "https://www.aerobusbcn.com/en", linkLabel: "Buy" },
+    { id: "ck-tcasual", title: "T-casual transit card", prio: "trip",
+      meta: "€12.55 · 10 rides · buy at any metro vending machine on arrival", link: "", linkLabel: "" },
+  ],
+};
+
+function loadChecks() {
+  try { return JSON.parse(localStorage.getItem("bcn-checks") || "{}"); }
+  catch(e) { return {}; }
+}
+function saveChecks(state) {
+  try { localStorage.setItem("bcn-checks", JSON.stringify(state)); }
+  catch(e) {}
+}
+
+function prioBadge(p) {
+  if (p === "now") return '<span class="priority p-now">Book now</span>';
+  if (p === "soon") return '<span class="priority p-soon">Book soon</span>';
+  if (p === "trip") return '<span class="priority p-trip">On arrival</span>';
+  return "";
+}
+
+function renderChecklist() {
+  const state = loadChecks();
+  ["tickets","resto","practical"].forEach(key => {
+    const container = document.getElementById("booking-list-" + key);
+    container.innerHTML = "";
+    checklist[key].forEach(item => {
+      const done = !!state[item.id];
+      const div = document.createElement("div");
+      div.className = "check-item" + (done ? " done" : "");
+      div.innerHTML = `
+        <div class="check-box">✓</div>
+        <div class="check-body">
+          <div class="check-title">${item.title}${prioBadge(item.prio)}</div>
+          <div class="check-meta">${item.meta}</div>
+          ${item.link ? `<div class="check-actions"><a class="btn-pill book" target="_blank" rel="noopener" href="${item.link}">${item.linkLabel}</a></div>` : ""}
+        </div>
+      `;
+      div.querySelector(".check-box").addEventListener("click", () => {
+        const s = loadChecks();
+        s[item.id] = !s[item.id];
+        saveChecks(s);
+        renderChecklist();
+      });
+      container.appendChild(div);
+    });
+  });
+}
+
+document.getElementById("reset-checks").addEventListener("click", () => {
+  if (confirm("Clear all checked items?")) {
+    saveChecks({});
+    renderChecklist();
+  }
+});
+
+// ============ Init ============
+updateCountdown();
+markDays();
+renderChecklist();
+</script>
+
+</body>
+</html>
